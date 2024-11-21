@@ -4,29 +4,25 @@
   become: true
   tasks:
     - name: Determine CPU usage
-      shell: "top -bn1 | grep 'Cpu(s)' | awk '{print $2 + $4}'"
+      shell: "sudo su -c \"top -bn1 | grep 'Cpu(s)' | awk '{print \\$2 + \\$4}'\""
       register: cpu_usage
     - debug:
         msg: "CPU usage: {{ cpu_usage.stdout }}%"
 
     - name: Determine root filesystem usage
-      shell: "df -h / | tail -1 | awk '{print $5}'"
+      shell: "sudo su -c \"df -h / | tail -1 | awk '{print \\$5}'\""
       register: root_fs_usage
     - debug:
         msg: "Root filesystem usage: {{ root_fs_usage.stdout }}"
 
-    - name: Update a specific package
-      apt:
-        name: "{{ item }}"
-        state: latest
+    - name: Update a specific package (Debian-based)
+      shell: "sudo su -c 'apt-get install -y {{ item }}'"
       loop:
         - vim
       when: ansible_os_family == "Debian"
 
-    - name: Update a specific package
-      yum:
-        name: "{{ item }}"
-        state: latest
+    - name: Update a specific package (RedHat-based)
+      shell: "sudo su -c 'yum install -y {{ item }}'"
       loop:
         - vim
       when: ansible_os_family == "RedHat"
