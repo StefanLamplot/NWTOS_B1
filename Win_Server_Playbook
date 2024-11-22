@@ -1,6 +1,6 @@
 ---
 - name: Install 7-Zip update make user and group and run ps command 
-  hosts: win_clients
+  hosts: win_servers
   become: true
   tasks:
     - name: Ensure 7-Zip is installed through Chocolatey
