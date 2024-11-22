@@ -1,0 +1,49 @@
+---
+- name: Install 7-Zip update make user and group and run ps command 
+  hosts: win_clients
+  become: true
+  tasks:
+    - name: Ensure 7-Zip is installed through Chocolatey
+      win_chocolatey:
+        hosts: win_clients
+        name: 7zip
+        state: present
+
+    - name: Install all critical and security updates
+      win_updates:
+        category_names:
+        - SecurityUpdates
+        state: installed
+      register: update_result
+    # Erstelle eine neue Gruppe in der Domain
+    - name: Ensure a domain group exists
+      win_domain_group:
+        name: "CoolPeople"
+        description: "Group for cool people"
+        state: present
+
+    # Erstelle Benutzer und füge sie der Domain-Gruppe hinzu
+    - name: Ensure domain users are created
+      win_domain_user:
+        name: '{{ item.name }}'
+        upn: '{{ item.name }}@corp.5cn.at'
+        password: '{{ item.password }}'
+        password_never_expires: false
+        groups:
+          - "CoolPeople"
+        company: "LamplotGMBH"
+        update_password: on_create
+      loop:
+        - name: StefanLamplot
+          password: 'Stefancool'
+        - name: EmirCajlakovic
+          password: 'Emircool'
+    #mkdir with powershell
+    - name: Create a directory under PowerShell
+      win_shell: |
+        mkdir C:\ExampleDir
+
+    - name: Reboot host if required
+      win_reboot:
+      when: update_result.reboot_required
+    
