@@ -5,29 +5,17 @@ sudo hostnamectl set-hostname LinRouter
 sudo cat <<EOT > /etc/netplan/00-installer-config.yaml
 network:
   ethernets:
-    lan_1:
+    ens33:
       addresses:
-        - 192.168.10.254/24
-      match:
-        macaddress: $1
-      set-name: lan_1
-    lan_2:
+        - 10.0.10.254/24
+    ens38:
       addresses:
-        - 192.168.20.254/24
-      match:
-        macaddress: $2
-      set-name: lan_2
+        - 10.0.20.254/24
     lan_3:
       addresses:
-        - 192.168.30.254/24
-      match:
-        macaddress: $3
-      set-name: lan_3
+        - 10.0.30.254/24
     outside:
       dhcp4: true
-      match:
-        macaddress: $4
-      set-name: outside
   version: 2
 EOT
 
